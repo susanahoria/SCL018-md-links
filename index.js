@@ -1,34 +1,38 @@
-const fs = require("fs");
-const path = require("path");
-const Yargs = require("yargs");
+import fetch from "node-fetch";
+import fs from "fs";
+import path from "path";
+import Yargs from "yargs";
 
 const userPath = process.argv[2];
 const option = Yargs(process.argv.slice(2)).argv;
 const regEx = /\[([^\]]+)]\((https?:\/\/[^\s)]+)\)/g;
 
 const isMdFile = (fileToRead) => {
-  if (fileToRead === undefined) {
-    return;
-  }
   const ext = path.extname(fileToRead.toLowerCase());
-  if (ext === ".md") {
-    try {
-      if (fs.existsSync(fileToRead)) {
-        const data = fs.readFileSync(fileToRead, {
-          encoding: "utf8",
-          flag: "r",
-        });
-        return readUserFile(data);
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  if (fileToRead === undefined) {
+    console.log("archivo undefined");
+  } else if (ext === ".md") {
+    return readUserFile(fileToRead);
   } else {
     console.log("Extensión del archivo incorrecto");
   }
 };
 
-const readUserFile = (file) => {
+const readUserFile = (readFile) => {
+  try {
+    if (fs.existsSync(readFile)) {
+      const data = fs.readFileSync(readFile, {
+        encoding: "utf8",
+        flag: "r",
+      });
+      return readLinks(data);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const readLinks = (file) => {
   const lines = file.split("\n");
   let allLinks = [];
   for (let i = 0; i < lines.length; i++) {
@@ -66,7 +70,7 @@ const validateLinks = (links) => {
   return Promise.all(validated);
 };
 
-const validate = true;
+// const validate = true;
 const mdLinks = (fileToRead) => {
   return new Promise((resolve, reject) => {
     const links = isMdFile(fileToRead);
@@ -81,4 +85,4 @@ const mdLinks = (fileToRead) => {
 
 mdLinks(userPath).then((results) => console.log(results));
 
-module.exports = { mdLinks, readUserFile, validateLinks, isMdFile };
+export { mdLinks, readLinks, validateLinks, isMdFile };
