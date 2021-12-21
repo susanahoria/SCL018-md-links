@@ -9,9 +9,7 @@ const regEx = /\[([^\]]+)]\((https?:\/\/[^\s)]+)\)/g;
 
 const isMdFile = (fileToRead) => {
   const ext = path.extname(fileToRead.toLowerCase());
-  if (fileToRead === undefined) {
-    console.log("archivo undefined");
-  } else if (ext === ".md") {
+  if (ext === ".md") {
     return readUserFile(fileToRead);
   } else {
     console.log("Extensión del archivo incorrecto");
@@ -85,4 +83,4 @@ const mdLinks = (fileToRead) => {
 
 mdLinks(userPath).then((results) => console.log(results));
 
-export { mdLinks, readLinks, validateLinks, isMdFile };
+export { mdLinks, readLinks, readUserFile, validateLinks, isMdFile };
